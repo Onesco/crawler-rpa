@@ -8,11 +8,13 @@ import  path from 'path';
 export const downloadPdfFile = async (url: string) => {
   let fileName = url.split('/').pop();
   const result = await fetch(url);
-  console.log('response header',result.headers.get('Content-Type'));
 
+  if(result.headers.get('Content-Type')?.includes('text/html')) {
+    console.log('pdf web server response in invalid format:' + result.headers.get('Content-Type'))
+    return
+  }
   const baseDownloadDir = "downloads";
   if (!fs.existsSync(baseDownloadDir)) await mkdir(baseDownloadDir); 
-
   const destination = path.resolve(baseDownloadDir, fileName || '');
   const body = result.body;
 
@@ -20,4 +22,5 @@ export const downloadPdfFile = async (url: string) => {
     const fileStream = fs.createWriteStream(destination);
     await finished(Readable.fromWeb(body as ReadableStream<any>).pipe(fileStream));
   }
+  
 };

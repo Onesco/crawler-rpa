@@ -23,6 +23,7 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@ironsoftware/ironpdf": "^2024.3.1",
     "commader": "^1.0.0",
     "jsdom": "^24.0.0"
   }
