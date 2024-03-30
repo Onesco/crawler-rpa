@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { getPdfFiles, fetchWebPageAsText } from "../src/utils";
+import { getPdfFiles, fetchWebPageAsText } from "./utils";
 
 const program = new Command();
 
-type Url = string;
 program
 .option('-u --url','the url to site to process')
 .argument('<url>', '<url> the url to site to process')
-.action((url: Url) => {
-    console.log(`Hello ${url}!`);
+.action( async (url: string) => {
+    const websiteAstext = await fetchWebPageAsText(url);
+    const pdfFiles = await getPdfFiles(websiteAstext);
+    console.log(pdfFiles);
 }).description("this command take in an arg url for a website url process it in order to get all pdf file in the page and merge them ");   
 
 
