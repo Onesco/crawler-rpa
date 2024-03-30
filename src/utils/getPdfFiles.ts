@@ -77,6 +77,7 @@ export const getPdfFiles = (htmlBody: string, searchString?: string): string[] =
       const pdfFiles = extractPdffiles(adoc);
       return pdfFiles;
     }
+    return [''];
   }
     return extractPdffiles(domElement);
 };

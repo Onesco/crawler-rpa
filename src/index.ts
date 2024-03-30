@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+import { getPdfFiles, fetchWebPageAsText } from "../src/utils";
 
 const program = new Command();
 
