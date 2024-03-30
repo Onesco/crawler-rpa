@@ -10,6 +10,7 @@
     "unlink:cli": "pnpm unlink crawler-rpa",
     "link:cli": "pnpm link --global .",
     "dev": "tsc -w",
+    "build": "tsc",
     "test": "jest"
   },
   "author": "",
