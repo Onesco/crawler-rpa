@@ -9,7 +9,7 @@ program
 .argument('<url>', '<url> the url to site to process')
 .action( async (url: string) => {
     const websiteAstext = await fetchWebPageAsText(url);
-    const pdfFiles = await getPdfFiles(websiteAstext);
+    const pdfFiles = getPdfFiles(websiteAstext);
     console.log(pdfFiles, 'duration:', Date.now() - startTime + 'ms');
 }).description("this command take in an arg url for a website url process it in order to get all pdf file in the page and merge them ");   
 
