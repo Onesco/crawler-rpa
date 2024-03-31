@@ -2,6 +2,7 @@ import {JSDOM} from "jsdom";
 import fs from "fs";
 import  path from 'path';
 import { readPdfFile } from ".";
+import main from "../worker";
 
 type PdfLinkObject = {
   [key: string]: {
@@ -10,7 +11,7 @@ type PdfLinkObject = {
   };
 }
 
-const extractPdffiles = (domElement: JSDOM ): string[] => {
+const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] => {
   const embemdedElements = domElement.window.document.querySelectorAll('embed[src*=".pdf"]');
   const iframeElements = domElement.window.document.querySelectorAll('iframe[src*=".pdf"]');
   const objectElements = domElement.window.document.querySelectorAll('object[data*=".pdf"]');
@@ -33,6 +34,7 @@ const extractPdffiles = (domElement: JSDOM ): string[] => {
         const endIndex = src.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
+          if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
         }
       }
     }
@@ -43,6 +45,7 @@ const extractPdffiles = (domElement: JSDOM ): string[] => {
         const endIndex = data.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 &&  endIndex!== -1){
           pdfFiles.push(data.substring(startIndex, endIndex + 4));
+          if (isConCurrent) main('', '', [data.substring(startIndex, endIndex + 4)]);
         }
       }
     }
@@ -53,6 +56,7 @@ const extractPdffiles = (domElement: JSDOM ): string[] => {
         const endIndex = src.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
+          if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
         }
       }
     }
@@ -63,6 +67,7 @@ const extractPdffiles = (domElement: JSDOM ): string[] => {
         const endIndex = href.indexOf('.pdf')
         if( startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(href.substring(startIndex, endIndex + 4));
+          if (isConCurrent) main('', '', [href.substring(startIndex, endIndex + 4)]);
         }
       }
     }
@@ -128,7 +133,7 @@ const cachedProcessedData = (pdfLinks: string[], fileName: string, url: string, 
 };
 
 
-export const getPdfFiles = (htmlBody: string, searchString?: string, url?: string): string[] => {
+export const getPdfFiles = (htmlBody: string, searchString?: string, url?: string, isConCurrent?: boolean): string[] => {
   const saveData = readPdfFile('pdf-links');
 
   if(saveData[`${url}`]) {
@@ -150,7 +155,7 @@ export const getPdfFiles = (htmlBody: string, searchString?: string, url?: strin
       pdfFiles = extractPdffiles(adoc);
     }
   }
-    pdfFiles = extractPdffiles(domElement);
+    pdfFiles = extractPdffiles(domElement, isConCurrent);
     if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, 'pdf-links', url ||'');
     return pdfFiles;
 };

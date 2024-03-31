@@ -22,6 +22,7 @@ export const downloadPdfFile = async (url: string) => {
     if (body){
       const fileStream = fs.createWriteStream(destination);
       await finished(Readable.fromWeb(body as ReadableStream<any>).pipe(fileStream));
+      console.log(`saved ${fileName}: ${destination}`)
     }
   
   } catch (error) {
