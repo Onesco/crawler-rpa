@@ -2,10 +2,10 @@ import {JSDOM} from "jsdom";
 
 
 const extractPdffiles = (domElement: JSDOM ): string[] => {
-  const embemdedElements = domElement.window.document.querySelectorAll('embed[src$=".pdf"]');
-  const iframeElements = domElement.window.document.querySelectorAll('iframe[src$=".pdf"]');
-  const objectElements = domElement.window.document.querySelectorAll('object[data$=".pdf"]');
-  const achorElements = domElement.window.document.querySelectorAll('a[href$=".pdf"]');
+  const embemdedElements = domElement.window.document.querySelectorAll('embed[src*=".pdf"]');
+  const iframeElements = domElement.window.document.querySelectorAll('iframe[src*=".pdf"]');
+  const objectElements = domElement.window.document.querySelectorAll('object[data*=".pdf"]');
+  const achorElements = domElement.window.document.querySelectorAll('a[href*=".pdf"]');
 
   const pdfFiles = <string[]>[];
 
@@ -15,30 +15,46 @@ const extractPdffiles = (domElement: JSDOM ): string[] => {
   const achorEleLength = achorElements.length;
   
   const maxLength = Math.max(embededEleLength, objectEleLength, iframeEleLength, achorEleLength);
-
+ 
   for(let i = 0; i < maxLength; i++){
     if(i <  embededEleLength ){
       const src = embemdedElements[i].getAttribute('src');
-      if(src && src.endsWith('.pdf')){
-        pdfFiles.push(src);
+      if(src){
+        const startIndex = src.indexOf('http');
+        const endIndex = src.indexOf('.pdf')
+        if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
+          pdfFiles.push(src.substring(startIndex, endIndex + 4));
+        }
       }
     }
     if(i < objectEleLength ){
       const data = objectElements[i].getAttribute('data');
-      if(data && data.endsWith('.pdf')){
-        pdfFiles.push(data);
+      if(data){
+        const startIndex = data.indexOf('http');
+        const endIndex = data.indexOf('.pdf')
+        if(startIndex >=0 && startIndex!== -1 &&  endIndex!== -1){
+          pdfFiles.push(data.substring(startIndex, endIndex + 4));
+        }
       }
     }
     if(i < iframeEleLength ){
       const src = iframeElements[i].getAttribute('src');
-      if(src && src.endsWith('.pdf')){
-        pdfFiles.push(src);
+      if(src){
+        const startIndex = src.indexOf('http');
+        const endIndex = src.indexOf('.pdf')
+        if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
+          pdfFiles.push(src.substring(startIndex, endIndex + 4));
+        }
       }
     }
     if(i < achorEleLength ){
       const href = achorElements[i].getAttribute('href');
-      if(href && href.endsWith('.pdf')){
-        pdfFiles.push(href);
+      if(href){
+        const startIndex = href.indexOf('http');
+        const endIndex = href.indexOf('.pdf')
+        if( startIndex >=0 && startIndex!== -1 && endIndex!== -1){
+          pdfFiles.push(href.substring(startIndex, endIndex + 4));
+        }
       }
     }
       

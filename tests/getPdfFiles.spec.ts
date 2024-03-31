@@ -37,15 +37,16 @@ describe('get Pdf files by seach', () => {
                 <embed src="https/static/somefile.pdf" width="100%"></embed>
                 <div>
                     group of pdf files
-                    <iframe src="https://youtube.com/somefile.pdf" width="100%"></iframe>
+                    <iframe src="https://youtube.com/somefile.pdf" width="100%">hello</iframe>
                     <object data="https://youtube.com/somefile.pdf" width="100%"></object>
                     <a href="https://youtube.com/somefile.pdf" width="100%"></a>
                 </div>
                 <a href="https://youtube.com/somefile.jpeg" width="100%"></a>
+                <object data="https://youtube.com/somefile.pdf" width="100%"></object>
+                <a href="https://youtube.com/somefile.pdf" width="100%"></a>
             </body>
         </html>
         `
-
         const pdfFiles = getPdfFiles(mockedHtmlBody, 'group of pdf files');
         const expected =  ["https://youtube.com/somefile.pdf", "https://youtube.com/somefile.pdf", "https://youtube.com/somefile.pdf" ];
         expect(pdfFiles).toEqual(expected);

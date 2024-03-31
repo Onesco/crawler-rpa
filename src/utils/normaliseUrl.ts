@@ -3,11 +3,11 @@ export const normaliseUrl = (url: string): string => {
         url = `http://${url}`;
     }
     try {
-        const {hostname, pathname, protocol} = new URL(url);
+        const newUrl = new URL(url);
+        const {hostname, pathname, protocol, searchParams} = newUrl;
         if(pathname === '/') return `${protocol}//${hostname}`;
-        const normalisedUrl = `${protocol}//${hostname}${pathname}`;
-        if(normalisedUrl.endsWith('/')) return normalisedUrl.slice(0, -1);
-        return normalisedUrl;
+        if(url.endsWith('/')) return url.slice(0, -1);
+        return newUrl.href;
     } catch (err) {
         console.log(err);
         return ''
