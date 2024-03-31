@@ -16,7 +16,6 @@ program
     const isConCurrent = options.concurrent;
    
     const websiteAstext = await fetchWebPageAsText(url);
-    console.log(websiteAstext);
     const pdfFiles = getPdfFiles(websiteAstext, search || optionSearch, url, isConCurrent);
      if (!isConCurrent) main(url,'',pdfFiles);
     elapsedTime('end crawling RPA');

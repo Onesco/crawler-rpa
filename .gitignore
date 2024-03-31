@@ -2,3 +2,4 @@ node_modules
 build
 downloads
 cached-crawled-pdf-links
+package-lock.json
