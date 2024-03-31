@@ -1,5 +1,13 @@
 import {JSDOM} from "jsdom";
+import fs from "fs";
+import  path from 'path';
 
+type PdfLinkObject = {
+  [key: string]: {
+    pdfs: string[];
+    expired_at: number;
+  };
+}
 
 const extractPdffiles = (domElement: JSDOM ): string[] => {
   const embemdedElements = domElement.window.document.querySelectorAll('embed[src*=".pdf"]');
@@ -82,18 +90,72 @@ const findNodeByText = (rootNode: HTMLElement, searchString: string): HTMLElemen
       }
   }
   return null;
+};
+
+const cachedProcessedData = (pdfLinks: string[], fileName: string, url: string, ttl = 86_400) => { // ttl: the time to live of 24 hours
+
+  console.log('caching data to disk')
+  const baseDownloadDir = "cached-crawled-pdf-links";
+  if (!fs.existsSync(baseDownloadDir)) {
+    fs.mkdirSync(baseDownloadDir); 
+  }
+  const data: PdfLinkObject = readPdfFile(fileName);
+
+  if (data[`${url}`]) {
+    const {expired_at} = data[`${url}`];
+    if (Date.now() < expired_at) {
+      return;
+    }
+    else{
+      delete data[`${url}`];
+    }
+  }
+
+  data[`${url}`] = {
+    pdfs: pdfLinks,
+    expired_at: Date.now() + ttl,
+  }
+  const destination = path.resolve(baseDownloadDir, `${fileName}.json`);
+
+  fs.writeFile(destination, JSON.stringify(data, null, 2), (err) => {
+    if (err) {
+      console.log("error in caching file");
+      return;
+    }
+    console.log("The file was saved!");
+  });
+};
+
+const readPdfFile = (fileName: string) => {
+  const baseDownloadDir = "cached-crawled-pdf-links";
+  const destination = path.resolve(baseDownloadDir, `${fileName}.json`);
+  if (!fs.existsSync(destination)) return {};
+  const data = fs.readFileSync(destination, 'utf8');
+  return JSON.parse(data.toString());
 }
 
-export const getPdfFiles = (htmlBody: string, searchString?: string): string[] => {
+export const getPdfFiles = (htmlBody: string, searchString?: string, url?: string): string[] => {
+  const saveData = readPdfFile('pdf-links');
+
+  if(saveData[`${url}`]) {
+    const {pdfs, expired_at} = saveData[`${url}`];
+    if (Date.now() < expired_at) {
+      return pdfs;
+    }
+    else{
+      delete saveData[`${url}`];
+    }
+  }
   const domElement = new JSDOM(htmlBody);
+  let pdfFiles: string[] = [];
   if (searchString ) {
     const node = findNodeByText(domElement.window.document.body, searchString);
     if (node) {
       const adoc =  new JSDOM(node.outerHTML);
-      const pdfFiles = extractPdffiles(adoc);
-      return pdfFiles;
+      pdfFiles = extractPdffiles(adoc);
     }
-    return [''];
   }
-    return extractPdffiles(domElement);
+    pdfFiles = extractPdffiles(domElement);
+    if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, 'pdf-links', url ||'');
+    return pdfFiles;
 };

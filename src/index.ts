@@ -12,7 +12,7 @@ program
     const options = program.opts();
     const optionSearch = options.search;
     const websiteAstext = await fetchWebPageAsText(url);
-    const pdfFiles = getPdfFiles(websiteAstext, search || optionSearch);
+    const pdfFiles = getPdfFiles(websiteAstext, search || optionSearch, url);
     console.log(pdfFiles, 'duration:', Date.now() - startTime + 'ms');
 }).description("this command take in an arg url for a website url process it in order to get all pdf file in the page and merge them ");  
 
