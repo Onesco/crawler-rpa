@@ -11,7 +11,7 @@ type PdfLinkObject = {
   };
 }
 
-const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] => {
+const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boolean): string[] => {
   const embemdedElements = domElement.window.document.querySelectorAll('embed[src*=".pdf"]');
   const iframeElements = domElement.window.document.querySelectorAll('iframe[src*=".pdf"]');
   const objectElements = domElement.window.document.querySelectorAll('object[data*=".pdf"]');
@@ -25,7 +25,7 @@ const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] =
   const achorEleLength = achorElements.length;
   
   const maxLength = Math.max(embededEleLength, objectEleLength, iframeEleLength, achorEleLength);
- 
+  
   for(let i = 0; i < maxLength; i++){
     if(i <  embededEleLength ){
       const src = embemdedElements[i].getAttribute('src');
@@ -35,6 +35,11 @@ const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] =
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
           if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
+        }
+        else if(src.endsWith('.pdf') && !src.startsWith('http')){
+          const pdfUrl = 'http://'+path.normalize(path.join(hostname, src.replaceAll('\\', '/')));
+          pdfFiles.push(pdfUrl);
+          if (isConCurrent) main('', '', [pdfUrl]);
         }
       }
     }
@@ -47,16 +52,28 @@ const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] =
           pdfFiles.push(data.substring(startIndex, endIndex + 4));
           if (isConCurrent) main('', '', [data.substring(startIndex, endIndex + 4)]);
         }
+        else if(data.endsWith('.pdf') && !data.startsWith('http')){
+          const pdfUrl = 'http://'+path.normalize(path.join(hostname, data.replaceAll('\\', '/')));
+          pdfFiles.push(pdfUrl);
+          if (isConCurrent) main('', '', [pdfUrl]);
+        }
       }
     }
     if(i < iframeEleLength ){
       const src = iframeElements[i].getAttribute('src');
+     
       if(src){
         const startIndex = src.indexOf('http');
         const endIndex = src.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
           if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
+        }
+        else if(src.endsWith('.pdf') && !src.startsWith('http')){
+          const pdfUrl = 'http://'+path.normalize(path.join(hostname, src.replaceAll('\\', '/')));
+          console.log(pdfUrl);
+          pdfFiles.push(pdfUrl);
+          if (isConCurrent) main('', '', [pdfUrl]);
         }
       }
     }
@@ -68,6 +85,11 @@ const extractPdffiles = (domElement: JSDOM, isConCurrent?: boolean ): string[] =
         if( startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(href.substring(startIndex, endIndex + 4));
           if (isConCurrent) main('', '', [href.substring(startIndex, endIndex + 4)]);
+        }
+        else if(href.endsWith('.pdf') && !href.startsWith('http')){
+          const pdfUrl = 'http://'+path.normalize(path.join(hostname, href.replaceAll('\\', '/')));
+          pdfFiles.push(pdfUrl);
+          if (isConCurrent) main('', '', [pdfUrl]);
         }
       }
     }
@@ -133,7 +155,7 @@ const cachedProcessedData = (pdfLinks: string[], fileName: string, url: string, 
 };
 
 
-export const getPdfFiles = (htmlBody: string, searchString?: string, url?: string, isConCurrent?: boolean): string[] => {
+export const getPdfFiles = (htmlBody: string, hostname: string, searchString?: string, url?: string, isConCurrent?: boolean): string[] => {
   const saveData = readPdfFile('pdf-links');
 
   if(saveData[`${url}`]) {
@@ -147,15 +169,16 @@ export const getPdfFiles = (htmlBody: string, searchString?: string, url?: strin
     }
   }
   const domElement = new JSDOM(htmlBody);
+
   let pdfFiles: string[] = [];
   if (searchString ) {
     const node = findNodeByText(domElement.window.document.body, searchString);
     if (node) {
       const adoc =  new JSDOM(node.outerHTML);
-      pdfFiles = extractPdffiles(adoc);
+      pdfFiles = extractPdffiles(adoc, hostname, isConCurrent);
     }
   }
-    pdfFiles = extractPdffiles(domElement, isConCurrent);
+    pdfFiles = extractPdffiles(domElement, hostname, isConCurrent);
     if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, 'pdf-links', url ||'');
     return pdfFiles;
 };
