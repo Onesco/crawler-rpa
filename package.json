@@ -11,7 +11,9 @@
     "link:cli": "pnpm link --global .",
     "dev": "tsc -w",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "clear:cache": "rm -rf ./cached-crawled-pdf-links",
+    "drop:dowloads": "rm -rf ./dowloads"
   },
   "author": "",
   "license": "ISC",
