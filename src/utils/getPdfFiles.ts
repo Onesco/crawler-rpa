@@ -134,6 +134,7 @@ export const getPdfFiles = (htmlBody: string, searchString?: string, url?: strin
   if(saveData[`${url}`]) {
     const {pdfs, expired_at} = saveData[`${url}`];
     if (Date.now() < expired_at) {
+      console.log("returned cached pdfs links")
       return pdfs;
     }
     else{

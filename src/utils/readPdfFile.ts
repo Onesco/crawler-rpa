@@ -4,7 +4,11 @@ import  path from 'path';
 export const readPdfFile = (fileName: string) => {
     const baseDownloadDir = "cached-crawled-pdf-links";
     const destination = path.resolve(baseDownloadDir, `${fileName}.json`);
-    if (!fs.existsSync(destination)) return {};
-    const data = fs.readFileSync(destination, 'utf8');
-    return JSON.parse(data.toString());
+    try {
+      const data = fs.readFileSync(destination, 'utf8');
+      return JSON.parse(data.toString());
+    } catch (error) {
+      console.log('errror occure while trying to read file from disk');
+      return {};
+    }
   }
