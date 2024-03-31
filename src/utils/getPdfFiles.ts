@@ -2,7 +2,7 @@ import {JSDOM} from "jsdom";
 import fs from "fs";
 import  path from 'path';
 import { readPdfFile } from ".";
-import main from "../worker";
+import download from "../worker";
 
 type PdfLinkObject = {
   [key: string]: {
@@ -34,12 +34,12 @@ const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boo
         const endIndex = src.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
-          if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
+          if (isConCurrent) download('', '', [src.substring(startIndex, endIndex + 4)]);
         }
         else if(src.endsWith('.pdf') && !src.startsWith('http')){
           const pdfUrl = 'http://'+path.normalize(path.join(hostname, src.replaceAll('\\', '/')));
           pdfFiles.push(pdfUrl);
-          if (isConCurrent) main('', '', [pdfUrl]);
+          if (isConCurrent) download('', '', [pdfUrl]);
         }
       }
     }
@@ -50,12 +50,12 @@ const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boo
         const endIndex = data.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 &&  endIndex!== -1){
           pdfFiles.push(data.substring(startIndex, endIndex + 4));
-          if (isConCurrent) main('', '', [data.substring(startIndex, endIndex + 4)]);
+          if (isConCurrent) download('', '', [data.substring(startIndex, endIndex + 4)]);
         }
         else if(data.endsWith('.pdf') && !data.startsWith('http')){
           const pdfUrl = 'http://'+path.normalize(path.join(hostname, data.replaceAll('\\', '/')));
           pdfFiles.push(pdfUrl);
-          if (isConCurrent) main('', '', [pdfUrl]);
+          if (isConCurrent) download('', '', [pdfUrl]);
         }
       }
     }
@@ -67,13 +67,13 @@ const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boo
         const endIndex = src.indexOf('.pdf')
         if(startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(src.substring(startIndex, endIndex + 4));
-          if (isConCurrent) main('', '', [src.substring(startIndex, endIndex + 4)]);
+          if (isConCurrent) download('', '', [src.substring(startIndex, endIndex + 4)]);
         }
         else if(src.endsWith('.pdf') && !src.startsWith('http')){
           const pdfUrl = 'http://'+path.normalize(path.join(hostname, src.replaceAll('\\', '/')));
           console.log(pdfUrl);
           pdfFiles.push(pdfUrl);
-          if (isConCurrent) main('', '', [pdfUrl]);
+          if (isConCurrent) download('', '', [pdfUrl]);
         }
       }
     }
@@ -84,12 +84,12 @@ const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boo
         const endIndex = href.indexOf('.pdf')
         if( startIndex >=0 && startIndex!== -1 && endIndex!== -1){
           pdfFiles.push(href.substring(startIndex, endIndex + 4));
-          if (isConCurrent) main('', '', [href.substring(startIndex, endIndex + 4)]);
+          if (isConCurrent) download('', '', [href.substring(startIndex, endIndex + 4)]);
         }
         else if(href.endsWith('.pdf') && !href.startsWith('http')){
           const pdfUrl = 'http://'+path.normalize(path.join(hostname, href.replaceAll('\\', '/')));
           pdfFiles.push(pdfUrl);
-          if (isConCurrent) main('', '', [pdfUrl]);
+          if (isConCurrent) download('', '', [pdfUrl]);
         }
       }
     }
@@ -155,8 +155,15 @@ const cachedProcessedData = (pdfLinks: string[], fileName: string, url: string, 
 };
 
 
-export const getPdfFiles = (htmlBody: string, hostname: string, searchString?: string, url?: string, isConCurrent?: boolean): string[] => {
-  const saveData = readPdfFile('pdf-links');
+export const getPdfFiles = (
+  htmlBody: string, 
+  hostname: string, 
+  searchString?: string, 
+  url?: string, 
+  isConCurrent?: boolean, 
+  saveAs?: string, 
+  ttl?: number ): string[] => {
+  const saveData = readPdfFile( saveAs ||'pdf-links');
 
   if(saveData[`${url}`]) {
     const {pdfs, expired_at} = saveData[`${url}`];
@@ -179,6 +186,8 @@ export const getPdfFiles = (htmlBody: string, hostname: string, searchString?: s
     }
   }
     pdfFiles = extractPdffiles(domElement, hostname, isConCurrent);
-    if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, 'pdf-links', url ||'');
+
+    // if there is pdf files then persist them by caching it to the disk
+    if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, saveAs ||'pdf-links', url ||'', ttl);
     return pdfFiles;
 };

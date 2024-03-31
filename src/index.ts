@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { getPdfFiles, fetchWebPageAsText, elapsedTime } from "./utils";
-import main from "./worker";
+import download from "./worker";
 
 const program = new Command();
 program
@@ -17,7 +17,7 @@ program
    
     const [websiteAstext, hostname] = await fetchWebPageAsText(url);
     const pdfFiles = getPdfFiles(websiteAstext, hostname, search || optionSearch, url, isConCurrent);
-     if (!isConCurrent) main(url,'',pdfFiles);
+     if (!isConCurrent) download(url,'',pdfFiles);
     elapsedTime('end crawling RPA');
      
 }).description("this crawler require url arg for a website process it in order to fet all available pdf files in the page and also download them either after all pdf files have been retrieved or currently available pdf files for each pdf file seen. It also has an internal caching mechanism that save all retrieved filed to the disk with a ttl of 24 hours upon which a further query to the provided website will return invalidated the cache and make a free query for the given url");  

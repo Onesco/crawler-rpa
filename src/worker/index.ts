@@ -1,6 +1,6 @@
 import { downloadPdfFile, readPdfFile } from "../utils";
 
-const main = async (url: string, fileName='pdf-links', pdfLinks?: string[]) =>{
+const download = async (url: string, fileName='pdf-links', pdfLinks?: string[]) =>{
     if(pdfLinks) {
         for(let pdfLink of pdfLinks) {
           downloadPdfFile(pdfLink);
@@ -19,4 +19,4 @@ const main = async (url: string, fileName='pdf-links', pdfLinks?: string[]) =>{
     }
 };
 
-export default main;
+export default download;
