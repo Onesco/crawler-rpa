@@ -16,32 +16,32 @@ Scecondly the tool also utilised the node thread pools by executing majority of 
 
 This project is build using `pnpm` so you need to install it global for some of the script like link. In the project directory, you can run:
 
-### `npm run dev or pnpm dev`
+#### `npm run dev or pnpm dev`
 
 Runs the app in the development mode by generating the build files in watch mode\
 
 This is helpful in generating the javascript files for each code change or edits.\
 
 
-### `npm test or pnpm test`
+#### `npm test or pnpm test`
 
 Runs unit test for the majority of utility functions\
 
-### `npm run build or pnpm build`
+#### `npm run build or pnpm build`
 
 Builds the tool the `build` folder.\
 
 
-### `npm run link:cli or pnpm link` this script requires the pnpm package manager to be installed first on your system but you can change it to use npm or yarn instead
+#### `npm run link:cli or pnpm link` this script requires the pnpm package manager to be installed first on your system but you can change it to use npm or yarn instead
 This register and link the crawler-rpa tool to your path environment variable globally. so that you can easily use the tool by typying `crawler-rpa <url> [search] [-options]` \
 
-## `npm run unlink:cli or pnpm unlink:cli`
+#### `npm run unlink:cli or pnpm unlink:cli`
 this unregister and unlink the tool making it unavailable for you to use
 
-## `npm run clear:cache or pnpm clear:cache` 
+#### `npm run clear:cache or pnpm clear:cache` 
 This invalidate the cache by removing it from the system disc
 
-## `npm run drop:dowloads or pnpm drop:dowloads`
+#### `npm run drop:dowloads or pnpm drop:dowloads`
 
 This delete all the dowloaded pdf files from the system
 
@@ -59,7 +59,7 @@ After then you can now run: \
 
 Will go through the google page for this search link and dowload all the available pdf files.
 
-the options:
+#### the options:
 1. `-u` for short or `--url` is for the url to search and it optional so you can remove it and just run `crawler-rpa <url link>`
 2. `-conc` for short or `--concurrent` will ensure that for each found pdf file, the download will be handle by a thread will the seach for the next one continue with asynchronous. it is optional if provide it improve performance but if not provieded the download of pdf files will only occur after we might have seen all the pdf files in the page.
 3. `-s` for short or `--search` is used to provide a search key word which will be will allow us to get get pdf file[s] for that given parent node the search key work is found.
