@@ -5,3 +5,4 @@ export { downloadPdfFile } from './downloadPdfFile';
 export { readPdfFile } from './readPdfFile';
 export { elapsedTime } from './benchMarkTimer';
 export { mergePdfs } from "./mergePdfs";
+export { createPDF } from './createPdf';

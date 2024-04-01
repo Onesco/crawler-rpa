@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import { getPdfFiles, fetchWebPageAsText, elapsedTime, mergePdfs } from "./utils";
 import download from "./worker";
+import { translatePDF } from "./utils/translatePdf";
 
 const program = new Command();
 
@@ -35,16 +36,22 @@ program.command('merge')
 .action( async (files: string, mergedAs?: string) => {
     elapsedTime('start merging files');
     mergePdfs(files.split(',').map((e:string)=>e.trim()), mergedAs);
-    elapsedTime('finish merging files');
+    elapsedTime('merging ended');
 } )
 
 program.command('translate')
-.argument('<file>', 'string to the path to the pdf file to be translated separate "mysecondpdffile.pdf"')
-.argument('[target-locale]', 'the target locale to translate the pdf file to (default"en"). it must include the following supported locales: en,nl,kr,')
-.action( async (file: string, local: string) => {
-    elapsedTime('start merging files');
+.argument('<file>', 'string to the path to the pdf file to be translated "mysecondpdffile.pdf"')
+.argument('<to>', 'the target locale to translate the pdf file to (default"en"). It can be any of the following supported locales: en,nl,kr,')
+.option('-f --from<string>', 'the locale of the pdf file (default"auto"). It can be any of the following supported locales: en,nl,kr,')
+.option('-ta --translated-as <string>', 'the name you want to save the translated file as. if not provide it is default to old-filename-<to>.pdf')
+.action( async (file: string, to: string) => {
+    elapsedTime('start translating');
+    const options = program.opts();
+    const optionFrom = options.from;
+    const optionTranslatedAs = options.translatedAs;
     // todo: add translation handler
-    elapsedTime('finish merging files');
+    translatePDF(file, to, optionFrom, optionTranslatedAs);
+    elapsedTime('translation ended');
 } )
 
 

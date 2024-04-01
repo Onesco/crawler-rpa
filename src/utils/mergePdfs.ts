@@ -12,7 +12,7 @@ export const mergePdfs = async (filePaths: string[], mergedAs?: string, onlinePd
             allPdfsPromise.push(fs.promises.readFile(pdfFilePath));
         };
         const [pdfDoc, ...fetchedPdfBytes] = await Promise.all(allPdfsPromise);
-        // (pdfDoc as PDFDocument)
+       
         // load all pdf docuemts to the PDFDocument concurrently
         const allPdfBuffers = [];
         for(let pdfDoc of (fetchedPdfBytes as Buffer[]))  {
@@ -37,7 +37,7 @@ export const mergePdfs = async (filePaths: string[], mergedAs?: string, onlinePd
         // save merged pdf
         const mergedPdfBytes = await (pdfDoc as PDFDocument).save();
 
-        // fs.writeFileSync(destination, mergedPdfBytes);
+        // write merged pdf to disk
         const fileName = mergedAs || 'merged';
         const baseDownloadDir = "merged-pdf-files";
         if (!fs.existsSync(baseDownloadDir)) await mkdir(baseDownloadDir); 
