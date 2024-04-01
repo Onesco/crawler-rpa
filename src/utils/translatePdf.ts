@@ -45,7 +45,7 @@ export const translatePDF = async (pdfFilePath: string, to: string, from?: strin
         const createdPdf = await createPDF(translatedText);
 
          // write translated pdf to the disk
-         const fileName = filename || pdfFilePath.split('/').pop()?.slice(0, -4);
+         const fileName = filename || pdfFilePath.split('/').pop()?.slice(0, -4)+'-'+to;
          const baseDownloadDir = "translated-pdf-files";
          if (!fs.existsSync(baseDownloadDir)) await mkdir(baseDownloadDir); 
          const destination = path.resolve(baseDownloadDir, `${fileName}.pdf`);
