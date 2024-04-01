@@ -108,7 +108,7 @@ this command is used for merging pdf files
 
 run `crawler-rpa merge -h ` to see the help menu at the merge command level
 #### merge command example:
-`crawler-rpa merge "first-pdf-file-path.pdf, second-pdf-file-path.pdf, third-pdf-file-path.pdf"  "merge-output-name`
+`crawler-rpa merge "first-pdf-file-path.pdf, second-pdf-file-path.pdf, third-pdf-file-path.pdf"  "merge-output-name"`
 
 ``` 
 % crawler-rpa merge -h
