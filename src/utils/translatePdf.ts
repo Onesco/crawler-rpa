@@ -5,6 +5,11 @@ import { mkdir } from 'fs/promises';
 import path from 'path';
 import { createPDF } from '.';
 
+import * as http from 'http';
+import { HttpProxyAgent } from 'http-proxy-agent';
+
+const agent = new HttpProxyAgent('http://5.135.83.214'); //list to available proxy: https://free-proxy-list.net/
+
 // Function to extract text from PDF
 const extractTextFromPDF = async(pdfFilePath: string): Promise<string> =>{
     try {
@@ -20,10 +25,10 @@ const extractTextFromPDF = async(pdfFilePath: string): Promise<string> =>{
 // Function to translate text using Google Translate API
 const translateText = async(textToTranslate: string, to: string, from?: string): Promise<string>  =>{
     try {
-        const { text } = await translate(textToTranslate, { to, from });
+        const { text } = await translate(textToTranslate, { to, from, fetchOptions: { agent }});
         return text;
     } catch (error: any) {
-        console.error('Error translating text:', error.message);
+        console.error('Error translating text:', error);
         process.exit(1)
     }
 }
