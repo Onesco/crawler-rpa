@@ -21,7 +21,7 @@ program
     const optionSaveAs = options.saveAs;
     const optionTtl = options.ttl;
    
-    const [websiteAstext, hostname] = await fetchWebPageAsText(url);
+    const [websiteAstext, hostname] = await fetchWebPageAsText(url.trim());
     const pdfFiles = getPdfFiles(websiteAstext, hostname, search || optionSearch, url, isConCurrent, optionSaveAs, optionTtl);
     if(pdfFiles.length  === 0) console.info("no pdf files found for this url: " + url);
     if (!isConCurrent) download(url,'',pdfFiles);

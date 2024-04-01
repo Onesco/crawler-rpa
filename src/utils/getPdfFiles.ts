@@ -163,13 +163,14 @@ export const getPdfFiles = (
   isConCurrent?: boolean, 
   saveAs?: string, 
   ttl?: number ): string[] => {
-  const saveData = readPdfFile( saveAs ||'pdf-links');
+
+  const saveData = readPdfFile(saveAs || 'pdf-links');
 
   if(saveData[`${url}`]) {
     const {pdfs, expired_at} = saveData[`${url}`];
     if (Date.now() < expired_at) {
-      console.log("returned cached pdfs links")
-      return pdfs;
+      console.log("pdf already dowloaded for the provided url, returned cached pdfs links\n", pdfs);
+      process.exit(0);
     }
     else{
       delete saveData[`${url}`];
