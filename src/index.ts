@@ -22,7 +22,8 @@ program
    
     const [websiteAstext, hostname] = await fetchWebPageAsText(url);
     const pdfFiles = getPdfFiles(websiteAstext, hostname, search || optionSearch, url, isConCurrent, optionSaveAs, optionTtl);
-     if (!isConCurrent) download(url,'',pdfFiles);
+    if(pdfFiles.length  === 0) console.info("no pdf files found for this url: " + url);
+    if (!isConCurrent) download(url,'',pdfFiles);
     elapsedTime('end crawling RPA');
      
 }).description("this crawler require url argument for a website in order to process it and retrieve all available pdf files in the page and also download them either after all pdf files have been retrieved or currently available pdf files for each pdf file seen. It also has an internal caching mechanism that save all retrieved filed to the disk with a ttl of 24 hours upon which a further query to the provided website will return invalidated the cache and make a free query for the given url.\nIt also has option to that allows you to merge list of pdf files into one by providing the file path to the pdf files");  
