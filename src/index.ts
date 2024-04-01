@@ -38,5 +38,14 @@ program.command('merge')
     elapsedTime('finish merging files');
 } )
 
+program.command('translate')
+.argument('<file>', 'string to the path to the pdf file to be translated separate "mysecondpdffile.pdf"')
+.argument('[target-locale]', 'the target locale to translate the pdf file to (default"en"). it must include the following supported locales: en,nl,kr,')
+.action( async (file: string, local: string) => {
+    elapsedTime('start merging files');
+    // todo: add translation handler
+    elapsedTime('finish merging files');
+} )
+
 
 program.parse(process.argv);
