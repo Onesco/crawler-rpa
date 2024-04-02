@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+
+import { availableParallelism } from 'os';
+import process from 'node:process';
 import { getPdfFiles, fetchWebPageAsText, elapsedTime, mergePdfs } from "./utils";
 import download from "./worker";
 import { translatePDF } from "./utils/translatePdf";
@@ -12,9 +15,12 @@ program
 .option('-conc --concurrent','the boolean value that is provided in order to execute both the get of pdf files and download of the pdf files concurrently')
 .option('-t --ttl <number>', 'the time to live (in seconds) of retrieved pdf files links from a given web page (default: 86_400 seconds that is 24 hours)')
 .option('-sa --save-as <string>', 'json file name to save the cached retrieved pdf file cached-crawled-pdf-links directory, if absent default to pdf-links')
+.option('-f --from <string>', 'the locale of the pdf file (default"auto"). It can be any of the following supported locales: en,nl,kr,')
+.option('-ta --translated-as <string>', 'the name you want to save the translated file as. if not provide it is default to old-filename-<to>.pdf')
 .arguments('<url> [search]')
 .action( async (url: string, search: string) => {
     elapsedTime('start crawling RPA');
+
     const options = program.opts();
     const optionSearch = options.search;
     const isConCurrent = options.concurrent;
@@ -23,6 +29,7 @@ program
    
     const [websiteAstext, hostname] = await fetchWebPageAsText(url.trim());
     const pdfFiles = getPdfFiles(websiteAstext, hostname, search || optionSearch, url, isConCurrent, optionSaveAs, optionTtl);
+
     if(pdfFiles.length  === 0) console.info("no pdf files found for this url: " + url);
     if (!isConCurrent) download(url,'',pdfFiles);
     elapsedTime('end crawling RPA');
@@ -32,27 +39,26 @@ program
 
 program.command('merge')
 .argument('<files>', 'string of file paths to the pdf files to be merge separate by comma delimiter[","] example-  to "myfirstpdffile.pdf,mysecondpdffile.pdf"')
-.argument('[marge-as]', 'the name you want want to merge the files to. if not provide it is default to merged.pdf')
+.argument('[marge-as]', 'the name you want want to merge the files to. if not provide it is default a string of all the file names delimited by "__" between each names')
 .action( async (files: string, mergedAs?: string) => {
     elapsedTime('start merging files');
     mergePdfs(files.split(',').map((e:string)=>e.trim()), mergedAs);
     elapsedTime('merging ended');
-} )
+}).description('This command will merge lists of pdf files into a single pdf file. The pdf files must be provided as a the first argument as string sepearated by comma delimiter. The second argument is optional and when provided will be the name of the merged file')
 
 program.command('translate')
 .argument('<file>', 'string to the path to the pdf file to be translated "mysecondpdffile.pdf"')
-.argument('<to>', 'the target locale to translate the pdf file to (default"en"). It can be any of the following supported locales: en,nl,kr,')
-.option('-f --from<string>', 'the locale of the pdf file (default"auto"). It can be any of the following supported locales: en,nl,kr,')
+.argument('<to>', 'the target locale to translate the pdf file to (default"en"). It can be any of the following supported locales: en,nl,pt see <https://cloud.google.com/translate/docs/languages> for supported lcales ')
+.option('-f --from <string>', 'the locale of the pdf file (default"auto"). It can be any of the following supported locales: en,nl,kr,')
 .option('-ta --translated-as <string>', 'the name you want to save the translated file as. if not provide it is default to old-filename-<to>.pdf')
 .action( async (file: string, to: string) => {
     elapsedTime('start translating');
     const options = program.opts();
-    const optionFrom = options.from;
+    const from = options.from;
     const optionTranslatedAs = options.translatedAs;
-    // todo: add translation handler
-    translatePDF(file, to, optionFrom, optionTranslatedAs);
+    translatePDF(file, to, from, optionTranslatedAs);
     elapsedTime('translation ended');
-} )
+}).description('translate PDF file text only to a provided locale based on google translation api. The supported locale to translate to are seen in this link <https://cloud.google.com/translate/docs/languages>');
 
 
 program.parse(process.argv);

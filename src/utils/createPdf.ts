@@ -37,7 +37,7 @@ export const createPDF = async (text: string)  => {
                 x: 20,
                 y,
                 font: font,
-                size: 12,
+                size: 9,
                 color: rgb(0, 0, 0), // Black color
             });
         });

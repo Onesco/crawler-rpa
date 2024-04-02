@@ -2,7 +2,7 @@
 import { normaliseUrl } from ".";
 
 export const fetchWebPageAsText = async (url: string) => {
-    console.log(`Fetching data from ${url}`);
+    console.log(`Fetching data`);
     const [formatedUrl, hostname] = normaliseUrl(url);
     try{
         const res = await fetch(formatedUrl);
