@@ -75,34 +75,44 @@ Will go through the google page for this search link and dowload all the availab
 
 
 ```
- %
- crawler-rpa -h
+ % crawler-rpa -h      
 Usage: crawler-rpa [options] [command] <url> [search]
 
-this crawler require url argument for a website in order to process it and retrieve all available pdf files in the page
-and also download them either after all pdf files have been retrieved or currently available pdf files for each pdf file
-seen. It also has an internal caching mechanism that save all retrieved filed to the disk with a ttl of 24 hours upon
-which a further query to the provided website will return invalidated the cache and make a free query for the given url.
+this crawler require url argument for a website in order to process it and retrieve all available pdf files in the
+page and also download them either after all pdf files have been retrieved or currently available pdf files for each
+pdf file seen. It also has an internal caching mechanism that save all retrieved filed to the disk with a ttl of 24
+hours upon which a further query to the provided website will return invalidated the cache and make a free query for
+the given url.
 It also has option to that allows you to merge list of pdf files into one by providing the file path to the pdf files
 
 Options:
-  -u --url                  the url to site to process
-  -s --search <string>      the string to search for pdf files on the site
-  -conc --concurrent        the boolean value that is provided in order to execute both the get of pdf files and download
-                            of the pdf files concurrently
-  -t --ttl <number>         the time to live (in seconds) of retrieved pdf files links from a given web page (default:
-                            86_400 seconds that is 24 hours)
-  -sa --save-as <string>    json file name to save the cached retrieved pdf file cached-crawled-pdf-links directory, if
-                            absent default to pdf-links
-  -h, --help                display help for command
+  -u --url                         the url to site to process
+  -s --search <string>             the string to search for pdf files on the site
+  -conc --concurrent               the boolean value that is provided in order to execute both the get of pdf files
+                                   and download of the pdf files concurrently
+  -t --ttl <number>                the time to live (in seconds) of retrieved pdf files links from a given web page
+                                   (default: 86_400 seconds that is 24 hours)
+  -sa --save-as <string>           json file name to save the cached retrieved pdf file cached-crawled-pdf-links
+                                   directory, if absent default to pdf-links
+  -f --from <string>               the locale of the pdf file (default"auto"). It can be any of the following
+                                   supported locales: en,nl,kr,
+  -ta --translated-as <string>     the name you want to save the translated file as. if not provide it is default to
+                                   old-filename-<to>.pdf
+  -h, --help                       display help for command
 
 Commands:
-  merge <files> [marge-as]
+  merge <files> [marge-as]         This command will merge lists of pdf files into a single pdf file. The pdf files
+                                   must be provided as a the first argument as string sepearated by comma delimiter.
+                                   The second argument is optional and when provided will be the name of the merged
+                                   file
+  translate [options] <file> <to>  translate PDF file text only to a provided locale based on google translation api.
+                                   The supported locale to translate to are seen in this link
+                                   <https://cloud.google.com/translate/docs/languages>
 
 ```
 
 
-### merging pdf file
+### merging pdf files
 `crawler-rpa merge [options]`
 this command is used for merging pdf files
 
@@ -114,12 +124,45 @@ run `crawler-rpa merge -h ` to see the help menu at the merge command level
 % crawler-rpa merge -h
 Usage: crawler-rpa merge [options] <files> [marge-as]
 
+This command will merge lists of pdf files into a single pdf file. The pdf files must be provided as a the first
+argument as string sepearated by comma delimiter. The second argument is optional and when provided will be the name
+of the merged file
+
 Arguments:
   files       string of file paths to the pdf files to be merge separate by comma delimiter[","] example-  to
               "myfirstpdffile.pdf,mysecondpdffile.pdf"
-  marge-as    the name you want want to merge the files to. if not provide it is default to merged.pdf
+  marge-as    the name you want want to merge the files to. if not provide it is default a string of all the file
+              names delimited by "__" between each names
 
 Options:
   -h, --help  display help for command
-mac@MACs-MBP crawler-rpa % 
+```
+
+### translate pdf file
+`crawler-rpa translate [options]`
+this command is used for merging pdf files
+
+run `crawler-rpa translate -h ` to see the help menu at the merge command level
+#### translate command example:
+`crawler-rpa translate "first-pdf-file-path.pdf"  "fr" -ta "my-first-pdf-file-in-fr"`
+
+``` 
+% crawler-rpa translate -h
+Usage: crawler-rpa translate [options] <file> <to>
+
+translate PDF file text only to a provided locale based on google translation api. The supported locale to translate
+to are seen in this link <https://cloud.google.com/translate/docs/languages>
+
+Arguments:
+  file                          string to the path to the pdf file to be translated "mysecondpdffile.pdf"
+  to                            the target locale to translate the pdf file to (default"en"). It can be any of the
+                                following supported locales: en,nl,pt see
+                                <https://cloud.google.com/translate/docs/languages> for supported lcales
+
+Options:
+  -f --from <string>            the locale of the pdf file (default"auto"). It can be any of the following supported
+                                locales: en,nl,kr,
+  -ta --translated-as <string>  the name you want to save the translated file as. if not provide it is default to
+                                old-filename-<to>.pdf
+  -h, --help                    display help for command
 ```
