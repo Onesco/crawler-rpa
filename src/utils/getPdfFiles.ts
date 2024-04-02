@@ -3,6 +3,7 @@ import fs from "fs";
 import  path from 'path';
 import { readPdfFile } from ".";
 import download from "../worker";
+import { cachedProcessedData } from "./cachedProcessedData";
 
 type PdfLinkObject = {
   [key: string]: {
@@ -71,7 +72,6 @@ const extractPdffiles = (domElement: JSDOM, hostname: string, isConCurrent?: boo
         }
         else if(src.endsWith('.pdf') && !src.startsWith('http')){
           const pdfUrl = 'http://'+path.normalize(path.join(hostname, src.replaceAll('\\', '/')));
-          console.log(pdfUrl);
           pdfFiles.push(pdfUrl);
           if (isConCurrent) download('', '', [pdfUrl]);
         }
@@ -120,41 +120,6 @@ const findNodeByText = (rootNode: HTMLElement, searchString: string): HTMLElemen
   return null;
 };
 
-const cachedProcessedData = (pdfLinks: string[], fileName: string, url: string, ttl = 86_400) => { // ttl: the time to live of 24 hours
-
-  console.log('caching data to disk')
-  const baseDownloadDir = "cached-crawled-pdf-links";
-  if (!fs.existsSync(baseDownloadDir)) {
-    fs.mkdirSync(baseDownloadDir); 
-  }
-  const data: PdfLinkObject = readPdfFile(fileName);
-
-  if (data[`${url}`]) {
-    const {expired_at} = data[`${url}`];
-    if (Date.now() < expired_at) {
-      return;
-    }
-    else{
-      delete data[`${url}`];
-    }
-  }
-
-  data[`${url}`] = {
-    pdfs: pdfLinks,
-    expired_at: Date.now() + ttl,
-  }
-  const destination = path.resolve(baseDownloadDir, `${fileName}.json`);
-
-  fs.writeFile(destination, JSON.stringify(data, null, 2), (err) => {
-    if (err) {
-      console.log("error in caching file");
-      return;
-    }
-    console.log("The file was saved!");
-  });
-};
-
-
 export const getPdfFiles = (
   htmlBody: string, 
   hostname: string, 
@@ -179,6 +144,7 @@ export const getPdfFiles = (
   const domElement = new JSDOM(htmlBody);
 
   let pdfFiles: string[] = [];
+
   if (searchString ) {
     const node = findNodeByText(domElement.window.document.body, searchString);
     if (node) {
@@ -186,9 +152,10 @@ export const getPdfFiles = (
       pdfFiles = extractPdffiles(adoc, hostname, isConCurrent);
     }
   }
+  else{
     pdfFiles = extractPdffiles(domElement, hostname, isConCurrent);
-
-    // if there is pdf files then persist them by caching it to the disk
-    if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, saveAs ||'pdf-links', url ||'', ttl);
-    return pdfFiles;
+  }
+  // if there is pdf files then persist them by caching it to the disk
+  if (pdfFiles.length > 0) cachedProcessedData(pdfFiles, saveAs ||'pdf-links', url ||'', ttl);
+  return pdfFiles;
 };

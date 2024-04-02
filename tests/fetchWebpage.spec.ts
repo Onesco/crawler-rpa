@@ -21,6 +21,6 @@ global.fetch = jest
 describe('fetchWebPageAsText', () => {
     it('should return the html element of the page', async () => {
         const response = await fetchWebPageAsText('google.com');
-        expect(response).toEqual(mockedHtmlBody);
+        expect(response[0]).toEqual(mockedHtmlBody);
     });
 });
