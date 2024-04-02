@@ -131,7 +131,7 @@ export const getPdfFiles = (
 
   const saveData = readPdfFile(saveAs || 'pdf-links');
 
-  if(saveData[`${url}`]) {
+  if(saveData[`${url}`] && !searchString) {
     const {pdfs, expired_at} = saveData[`${url}`];
     if (Date.now() < expired_at) {
       console.log("pdf already dowloaded for the provided url, returned cached pdfs links\n", pdfs);
