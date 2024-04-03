@@ -5,7 +5,6 @@ import { mkdir } from 'fs/promises';
 import path from 'path';
 import { createPDF } from '.';
 
-import * as http from 'http';
 import { HttpProxyAgent } from 'http-proxy-agent';
 
 const agent = new HttpProxyAgent('http://5.135.83.214'); //list to available proxy: https://free-proxy-list.net/

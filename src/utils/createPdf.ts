@@ -38,12 +38,13 @@ export const createPDF = async (text: string)  => {
                 y,
                 font: font,
                 size: 9,
-                color: rgb(0, 0, 0), // Black color
+                color: rgb(0, 0, 0),
             });
         });
+        pdfDoc.removePage(0);
         return await pdfDoc.save();
     } catch (error:any) {
         console.error('Failed to create PDF Document' + error.message)
-        return ''
+        process.exit(1);
     }
 };
